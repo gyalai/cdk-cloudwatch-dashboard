@@ -1,21 +1,11 @@
 import aws_cdk as core
-import aws_cdk.assertions as assertions
-from cdk_example01.cdk_example01_stack import CdkExample01Stack
+from demo_application.demo_application_stack import DemoApplicationStack
 
 
-def test_sqs_queue_created():
+def cdk_nag():
     app = core.App()
-    stack = CdkExample01Stack(app, "cdk-example01")
-    template = assertions.Template.from_stack(stack)
-
-    template.has_resource_properties("AWS::SQS::Queue", {
-        "VisibilityTimeout": 300
-    })
+    stack = DemoApplicationStack(app, "demo-application")
 
 
-def test_sns_topic_created():
-    app = core.App()
-    stack = CdkExample01Stack(app, "cdk-example01")
-    template = assertions.Template.from_stack(stack)
 
-    template.resource_count_is("AWS::SNS::Topic", 1)
+

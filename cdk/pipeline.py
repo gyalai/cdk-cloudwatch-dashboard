@@ -5,16 +5,20 @@ from aws_cdk import (
     aws_codebuild as _codebuild
 )
 from cdk.config import Config
+from cdk.application_stage import ApplicationStage
 from constructs import Construct
+
 
 class PipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, config: Config, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        #Pipeline
-        repository = _codecommit.Repository.from_repository_name(self, "repository", config.application.name)
+        # Pipeline
+        repository = _codecommit.Repository.from_repository_name(
+            self, "repository", config.application.name)
 
-        code_commit_repository_source = pipelines.CodePipelineSource.code_commit(repository, config.application.branch_name)
+        code_commit_repository_source = pipelines.CodePipelineSource.code_commit(
+            repository, config.application.branch_name)
 
         pipeline = pipelines.CodePipeline(
             self,
@@ -41,3 +45,9 @@ class PipelineStack(Stack):
                 ]
             )
         )
+
+        print(kwargs)
+
+        stage = ApplicationStage(self, "Dev", app_config=config.application)
+
+        pipeline.add_stage(stage)

@@ -1,0 +1,45 @@
+{
+  "vpc-provider:account=003528831483:filter.isDefault=false:filter.tag:Name=cdk-default-vpc:region=eu-central-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-02979b342f92af95b",
+    "vpcCidrBlock": "10.11.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Isolated",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-0c620a4458b77f16f",
+            "cidr": "10.11.128.0/20",
+            "availabilityZone": "eu-central-1a",
+            "routeTableId": "rtb-04afe7df33fa3c5fb"
+          },
+          {
+            "subnetId": "subnet-09dfde0c2336dee90",
+            "cidr": "10.11.144.0/20",
+            "availabilityZone": "eu-central-1b",
+            "routeTableId": "rtb-035d6366aaa192060"
+          }
+        ]
+      },
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0be6c3f857660c846",
+            "cidr": "10.11.0.0/20",
+            "availabilityZone": "eu-central-1a",
+            "routeTableId": "rtb-04b0ab861a9d43e36"
+          },
+          {
+            "subnetId": "subnet-013dc7a18a965721c",
+            "cidr": "10.11.16.0/20",
+            "availabilityZone": "eu-central-1b",
+            "routeTableId": "rtb-04b0ab861a9d43e36"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,7 +2,9 @@ import os
 from constructs import Construct
 from aws_cdk import (
     Duration,
+    Environment,
     Stack,
+    Stage,
     RemovalPolicy,
     CfnOutput,
     aws_iam as _iam,
@@ -12,24 +14,37 @@ from aws_cdk import (
     aws_dynamodb as _dynamodb
 )
 
+from cdk.config import AppConfig
+from cdk.dashboard import SmartDashboard
+
 absolute_path = os.path.dirname(__file__)
-demo_app_src_folder = os.path.join(absolute_path, 'src/lambda')
+demo_app_src_folder = os.path.join(absolute_path, '../src/lambda')
 
 PROJECT_NAME = "demo_application"
 
-class DemoApplicationStack(Stack):
+class ApplicationStage(Stage):
 
-    def __init__(self, scope: Construct, construct_id: str, project_name=PROJECT_NAME, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, app_config: AppConfig) -> None:
+        super().__init__(scope, id)
+
+        application = ApplicationStack(self, "Serverless-Application", app_config)
+
+        SmartDashboard(application, "Dashboard", app_config.name)
+
+
+class ApplicationStack(Stack):
+
+    def __init__(self, scope: Construct, construct_id: str, app_config: AppConfig, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        self.project_name = project_name
+        self.project_name = app_config.name
 
         kms_key = self.__create_ecryption_key()
-        self.create_app_log_group(project_name, kms_key)
+        self.create_app_log_group(self.project_name, kms_key)
         lambda_role = self.create_lambda_iam_role(
-            f"{project_name}-lambda-role", f"{project_name}-lambda-policy", project_name)
-        self.create_lambda(f"{project_name}-lambda", lambda_role)
-        self.__create_table('Table', f"{project_name}-table")
+            f"{self.project_name}-lambda-role", f"{self.project_name}-lambda-policy", self.project_name)
+        self.create_lambda(f"{self.project_name}-lambda", lambda_role)
+        self.__create_table('Table', f"{self.project_name}-table")
 
     def __create_ecryption_key(self) -> _kms.Key:
         """
@@ -38,7 +53,7 @@ class DemoApplicationStack(Stack):
         :returns: Created KMS Key
         :rtype: kms.Key
         """
-        alias=f"{self.project_name}-encryption-key"
+        alias = f"{self.project_name}-encryption-key"
 
         key = _kms.Key(
             self, "ProjectEncryptionKey",
@@ -136,11 +151,7 @@ class DemoApplicationStack(Stack):
         list_items_lambda.node.add_dependency(lambda_role)
 
         return list_items_lambda
-    
+
     def __create_table(self, name: str, table_name: str) -> _dynamodb.Table:
 
         return _dynamodb.Table(self, name, table_name=table_name, partition_key=_dynamodb.Attribute(name="id", type=_dynamodb.AttributeType.STRING))
-    
-    
-
-
